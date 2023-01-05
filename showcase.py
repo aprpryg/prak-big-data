@@ -1,10 +1,12 @@
+# Ini adalah tugas kelompok 9
+
 import yfinance as yf
 import pandas as pd
 import streamlit as st
 import plotly.express as px
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-
+from scikit-learn.model import train_test_split
 
 # https://towardsdatascience.com/how-to-get-stock-data-using-python-c0de1df17e75
 # define the ticker symbol in a dictionary, with its corresponding full name
