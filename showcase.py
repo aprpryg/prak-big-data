@@ -1,20 +1,17 @@
-# Ini adalah tugas kelompok 9
-
 import yfinance as yf
 import pandas as pd
-import numpy as np
-import math
 import streamlit as st
-import seaborn as sns
 import plotly.express as px
-import matplotlib.pyplot as plt
-from sklearn import metrics
+import seaborn as sns
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
+import numpy as np
+import math 
+import matplotlib.pyplot as plt
+from sklearn import metrics
 from sklearn.model_selection import train_test_split
+import yfinance as yf
 
-# https://towardsdatascience.com/how-to-get-stock-data-using-python-c0de1df17e75
-# define the ticker symbol in a dictionary, with its corresponding full name
 ticker_dict = {
     'ANTM.JK': "PT Aneka Tambang Tbk",
     'BMRI.JK': "PT Bank Mandiri (Persero) Tbk",
@@ -29,40 +26,43 @@ ticker_dict = {
     'GOOGL': "Google",
     'MSFT': "Microsoft",
     'AAPL': "Apple",
-    'META': "Facebook Meta"
+    'TSLA': "Tesla Inc",
+    'AMZN': "Amazon"
 }
 
 st.write("""
 # Aplikasi Yahoo Finance
-
-## Data Saham Beberapa Perusahaan
-
+## Data saham
 """)
 
-tickerSymbols = sorted(ticker_dict.keys())
-
-ticker = st.selectbox(
-    "Ticker Perusahaan",
-    options = tickerSymbols
+attributes = st.selectbox(
+    "Informasi yang ingin ditampilkan:",
+    options=['Open', 'High', 'Low', 'Close', 'Volume'],
 )
 
-st.write(f'Ticker perusahaan: **{ticker_dict[ticker]}**')
+tickersymbols = sorted(ticker_dict.keys())
 
-tickerData = yf.Ticker(ticker)
+ticker = st.selectbox(
+    "Perusahaan yang ingin ditampilkan",
+    options = tickersymbols,
+)
 
 hari_mundur = st.selectbox(
     "Pilihan rentang hari",
     options = [7, 10, 20, 30, 60, 90, 365]
 )
 
-jumlah_hari = timedelta(days = -int(hari_mundur))
+jumlah_hari = timedelta(days=-int(hari_mundur))
 
 tgl_mulai = date.today() + jumlah_hari
+
 
 tgl_akhir = st.date_input(
     "Hingga",
     value=date.today()
 )
+
+tickerData = yf.Ticker(ticker)
 
 tickerDF = tickerData.history(
     period='1d',
@@ -70,51 +70,22 @@ tickerDF = tickerData.history(
     end=str(tgl_akhir)
 )
 
-attributes = st.multiselect(
-    "Informasi yang ditampilkan:",
-    options=['Open', 'High', 'Low', 'Close', 'Volume'],
-    default=['Open', 'Close']
-)
+# st.write(attributes)
 
-st.markdown(f"Lima data pertama:")
+st.markdown(f"Lima data pertama")
 st.write(tickerDF.head())
 
-#st.plotly_chart( px.line(tickerDF.Open) )
-#st.plotly_chart( px.line(tickerDF["High"]) )
+# st.plotly_chart( px.line(tickerDF.Open))
+# st.plotly_chart( px.line(tickerDF["High"]) )
 
 judul_chart = f'Harga Saham {ticker_dict[ticker]} ({ticker})'
-
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import confusion_matrix, accuracy_score
-regression = LinearRegression()
-regression.fit(train_x, train_y)
-print(f"{regression.coef_ = }")
-print(f"{regression.intercept_ = }")
-
-predicted=regression.predict(test_x)
-print(test_x.head())
-
-dfr=pd.DataFrame({'Actual_Price':test_y, 'Predicted_Price':predicted})
-dfr.head(10)
-
-print('Mean Absolute Error (MAE):',
-      metrics.mean_absolute_error(test_y, predicted))
-print('Mean Squared Error (MSE) :',
-      metrics.mean_squared_error(test_y, predicted))
-print('Root Mean Squared Error (RMSE):',
-      np.sqrt(metrics.mean_squared_error(test_y, predicted)))
-
-x2 = dfr.Actual_Price.mean()
-y2 = dfr.Predicted_Price.mean()
-Accuracy1 = x2/y2*100
-print("The accuracy of the model is " , Accuracy1) 
 
 st.plotly_chart(
     px.line(
         tickerDF,
-        title=judul_chart,
+        title = judul_chart,
         y = attributes
-    )  
+    )
 )
 
 history = tickerData.history(period="Max")
@@ -129,6 +100,7 @@ train_x, test_x, train_y, test_y = train_test_split(x, y,
                                                     test_size=0.15,
                                                     shuffle=False,
                                                     random_state = 0)
+
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import confusion_matrix, accuracy_score
 regression = LinearRegression()
@@ -147,9 +119,9 @@ st.write('Root Mean Squared Error (RMSE):',
       np.sqrt(metrics.mean_squared_error(test_y, predicted)))
 
 dfr=pd.DataFrame({'Actual_Price':test_y, 'Predicted_Price':predicted})
-dfr.head(10)
+st.write(dfr.head(10))
 
 x2 = dfr.Actual_Price.mean()
 y2 = dfr.Predicted_Price.mean()
 Accuracy1 = x2/y2*100
-print("The accuracy of the model is " , Accuracy1)
+st.write("The accuracy of the model is " , Accuracy1)
