@@ -2,11 +2,16 @@
 
 import yfinance as yf
 import pandas as pd
+import numpy as np
+import math
 import streamlit as st
+import seaborn as sns
 import plotly.express as px
+import matplotlib.pyplot as plt
+from sklearn import metrics
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
-from scikit-learn.model import train_test_split
+from sklearn.model_selection import train_test_split
 
 # https://towardsdatascience.com/how-to-get-stock-data-using-python-c0de1df17e75
 # define the ticker symbol in a dictionary, with its corresponding full name
@@ -79,11 +84,72 @@ st.write(tickerDF.head())
 
 judul_chart = f'Harga Saham {ticker_dict[ticker]} ({ticker})'
 
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import confusion_matrix, accuracy_score
+regression = LinearRegression()
+regression.fit(train_x, train_y)
+print(f"{regression.coef_ = }")
+print(f"{regression.intercept_ = }")
+
+predicted=regression.predict(test_x)
+print(test_x.head())
+
+dfr=pd.DataFrame({'Actual_Price':test_y, 'Predicted_Price':predicted})
+dfr.head(10)
+
+print('Mean Absolute Error (MAE):',
+      metrics.mean_absolute_error(test_y, predicted))
+print('Mean Squared Error (MSE) :',
+      metrics.mean_squared_error(test_y, predicted))
+print('Root Mean Squared Error (RMSE):',
+      np.sqrt(metrics.mean_squared_error(test_y, predicted)))
+
+x2 = dfr.Actual_Price.mean()
+y2 = dfr.Predicted_Price.mean()
+Accuracy1 = x2/y2*100
+print("The accuracy of the model is " , Accuracy1) 
+
 st.plotly_chart(
     px.line(
         tickerDF,
         title=judul_chart,
         y = attributes
-    )
+    )  
 )
 
+history = tickerData.history(period="Max")
+df = pd.DataFrame(history)
+df.head(10)
+
+x = df[['Open', 'High','Low', 'Volume']]
+y = df['Close']
+
+# Linear regression Model for stock prediction 
+train_x, test_x, train_y, test_y = train_test_split(x, y,
+                                                    test_size=0.15,
+                                                    shuffle=False,
+                                                    random_state = 0)
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import confusion_matrix, accuracy_score
+regression = LinearRegression()
+regression.fit(train_x, train_y)
+st.write(f"{regression.coef_ = }")
+st.write(f"{regression.intercept_ = }")
+
+predicted=regression.predict(test_x)
+print(test_x.head())
+
+st.write('Mean Absolute Error (MAE):',
+      metrics.mean_absolute_error(test_y, predicted))
+st.write('Mean Squared Error (MSE) :',
+      metrics.mean_squared_error(test_y, predicted))
+st.write('Root Mean Squared Error (RMSE):',
+      np.sqrt(metrics.mean_squared_error(test_y, predicted)))
+
+dfr=pd.DataFrame({'Actual_Price':test_y, 'Predicted_Price':predicted})
+dfr.head(10)
+
+x2 = dfr.Actual_Price.mean()
+y2 = dfr.Predicted_Price.mean()
+Accuracy1 = x2/y2*100
+print("The accuracy of the model is " , Accuracy1)
