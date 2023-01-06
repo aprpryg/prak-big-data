@@ -2,7 +2,6 @@ import yfinance as yf
 import pandas as pd
 import streamlit as st
 import plotly.express as px
-import seaborn as sns
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 import numpy as np
