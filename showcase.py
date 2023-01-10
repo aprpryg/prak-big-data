@@ -30,7 +30,15 @@ ticker_dict = {
 }
 
 st.write("""
-# Aplikasi Yahoo Finance
+# Aplikasi Yahoo Finance Kelompok 9
+
+## Anggota
+1. Apri Prayoga
+2. Detris Susilo
+3. Putri Lufianda
+4. Rafiq
+
+
 ## Data saham
 """)
 
@@ -108,7 +116,7 @@ st.write(f"{regression.coef_ = }")
 st.write(f"{regression.intercept_ = }")
 
 predicted=regression.predict(test_x)
-print(test_x.head())
+#print(test_x.head())
 
 st.write('Mean Absolute Error (MAE):',
       metrics.mean_absolute_error(test_y, predicted))
